@@ -17,6 +17,7 @@
  */
 package com.microsoft.azure.storage;
 
+import java.net.Proxy;
 import java.util.Date;
 
 import com.microsoft.azure.storage.core.Utility;
@@ -26,7 +27,9 @@ import com.microsoft.azure.storage.core.Utility;
  */
 public abstract class RequestOptions {
 
-    /**
+	private Proxy proxy;
+    
+	/**
      * The instance of the {@link RetryPolicyFactory} interface to use for the request.
      */
     private RetryPolicyFactory retryPolicyFactory;
@@ -72,6 +75,7 @@ public abstract class RequestOptions {
             this.setLocationMode(other.getLocationMode());
             this.setMaximumExecutionTimeInMs(other.getMaximumExecutionTimeInMs());
             this.setOperationExpiryTimeInMs(other.getOperationExpiryTimeInMs());
+            this.setProxy(other.getProxy());
         }
     }
 
@@ -121,6 +125,11 @@ public abstract class RequestOptions {
                     + modifiedOptions.getMaximumExecutionTimeInMs());
         }
 
+        if (modifiedOptions.getProxy() != null) {
+        	modifiedOptions.setProxy(clientOptions.getProxy());
+        }
+
+        
         return modifiedOptions;
     }
 
@@ -269,4 +278,13 @@ public abstract class RequestOptions {
     private void setOperationExpiryTimeInMs(final Long operationExpiryTime) {
         this.operationExpiryTime = operationExpiryTime;
     }
+    
+    public Proxy getProxy() {
+		return proxy;
+	}
+
+	public void setProxy(Proxy proxy) {
+		this.proxy = proxy;
+	}
+
 }

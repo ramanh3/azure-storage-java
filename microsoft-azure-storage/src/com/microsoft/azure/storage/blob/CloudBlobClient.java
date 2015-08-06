@@ -15,6 +15,7 @@
 package com.microsoft.azure.storage.blob;
 
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -67,9 +68,23 @@ public final class CloudBlobClient extends ServiceClient {
      *            client.
      */
     public CloudBlobClient(final URI baseUri) {
-        this(new StorageUri(baseUri), null /* credentials */);
+        this(new StorageUri(baseUri), null /* credentials */,null /* proxy */);
     }
 
+    /**
+     * Creates an instance of the <code>CloudBlobClient</code> class using the specified Blob service endpoint and
+     * anonymous credentials.
+     * 
+     * @param baseUri
+     *            A <code>java.net.URI</code> object that represents the Blob service endpoint used to create the
+     *            client.
+    * @param proxy 
+    * 			  A {@link Proxy} object that allows to use the client behold LAN HTTP Proxy           
+    */
+	public CloudBlobClient(final URI baseUri, Proxy proxy) {
+		 this(new StorageUri(baseUri), null /* credentials */,proxy);
+	}
+	
     /**
      * Creates an instance of the <code>CloudBlobClient</code> class using the specified Blob service endpoint and
      * anonymous credentials.
@@ -79,9 +94,24 @@ public final class CloudBlobClient extends ServiceClient {
      *            client.
      */
     public CloudBlobClient(final StorageUri baseUri) {
-        this(baseUri, null /* credentials */);
+        this(baseUri, null /* credentials */,null /* proxy */);
     }
 
+    /**
+     * Creates an instance of the <code>CloudBlobClient</code> class using the specified Blob service endpoint and
+     * anonymous credentials.
+     * 
+     * @param baseUri
+     *            A {@link StorageUri} object that represents the Blob service endpoint used to create the
+     *            client.
+     * @param proxy 
+     * 			  A {@link Proxy} object that allows to use the client behold LAN HTTP Proxy           
+     */
+	public CloudBlobClient(final StorageUri baseUri, Proxy proxy) {
+		this(baseUri, null /* credentials */, proxy);
+	}
+
+    
     /**
      * Creates an instance of the <code>CloudBlobClient</code> class using the specified Blob service endpoint and
      * account credentials.
@@ -107,17 +137,36 @@ public final class CloudBlobClient extends ServiceClient {
      *            A {@link StorageCredentials} object that represents the account credentials.
      */
     public CloudBlobClient(final StorageUri storageUri, StorageCredentials credentials) {
-        super(storageUri, credentials);
-        this.defaultRequestOptions = new BlobRequestOptions();
-        this.defaultRequestOptions.setLocationMode(LocationMode.PRIMARY_ONLY);
-        this.defaultRequestOptions.setRetryPolicyFactory(new RetryExponentialRetry());
-        this.defaultRequestOptions.setConcurrentRequestCount(BlobConstants.DEFAULT_CONCURRENT_REQUEST_COUNT);
-        this.defaultRequestOptions.setDisableContentMD5Validation(false);
-        this.defaultRequestOptions
-                .setSingleBlobPutThresholdInBytes(BlobConstants.DEFAULT_SINGLE_BLOB_PUT_THRESHOLD_IN_BYTES);
-        this.defaultRequestOptions.setUseTransactionalContentMD5(false);
+        this(storageUri, credentials, null /*prxoy*/);        
     }
 
+    /**
+     * Creates an instance of the <code>CloudBlobClient</code> class using the specified Blob service endpoint,
+     * account credentials and Proxy.
+     * 
+     * @param storageUri
+     *            A {@link StorageUri} object that represents the Blob service endpoint used to create the
+     *            client.
+     * @param credentials
+     *            A {@link StorageCredentials} object that represents the account credentials.
+     * @param proxy 
+     * 			  A {@link Proxy} object that allows to use the client behold LAN HTTP Proxy           
+     */
+    public CloudBlobClient(final StorageUri storageUri, StorageCredentials credentials, Proxy proxy) {
+    	super(storageUri,credentials);
+    	 this.defaultRequestOptions = new BlobRequestOptions();
+         this.defaultRequestOptions.setLocationMode(LocationMode.PRIMARY_ONLY);
+         this.defaultRequestOptions.setRetryPolicyFactory(new RetryExponentialRetry());
+         this.defaultRequestOptions.setConcurrentRequestCount(BlobConstants.DEFAULT_CONCURRENT_REQUEST_COUNT);
+         this.defaultRequestOptions.setDisableContentMD5Validation(false);
+         this.defaultRequestOptions
+                 .setSingleBlobPutThresholdInBytes(BlobConstants.DEFAULT_SINGLE_BLOB_PUT_THRESHOLD_IN_BYTES);
+         this.defaultRequestOptions.setUseTransactionalContentMD5(false);
+         if(proxy!=null){
+        	 this.defaultRequestOptions.setProxy(proxy);
+         }
+    }
+    
     /**
      * Returns the number of maximum concurrent requests allowed.
      * 

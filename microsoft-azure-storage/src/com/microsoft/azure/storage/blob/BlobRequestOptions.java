@@ -175,6 +175,10 @@ public final class BlobRequestOptions extends RequestOptions {
             modifiedOptions.setDisableContentMD5Validation(clientOptions.getDisableContentMD5Validation());
         }
 
+        if (modifiedOptions.getProxy() == null) {
+            modifiedOptions.setProxy(clientOptions.getProxy());
+        }
+
         return modifiedOptions;
     }
 
