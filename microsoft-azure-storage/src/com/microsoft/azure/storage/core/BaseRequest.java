@@ -16,6 +16,7 @@ package com.microsoft.azure.storage.core;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -168,7 +169,16 @@ public final class BaseRequest {
 
         final URL resourceUrl = builder.addToURI(uri).toURL();
 
-        final HttpURLConnection retConnection = (HttpURLConnection) resourceUrl.openConnection();
+        final HttpURLConnection retConnection;
+		final Proxy proxy = options.getProxy();
+		if (proxy != null) {
+			// Use proxy provided to client
+			retConnection = (HttpURLConnection) resourceUrl.openConnection(proxy);
+		} else {
+			// Open connection without proxy or use java system properties
+			retConnection = (HttpURLConnection) resourceUrl.openConnection();
+
+		}
 
         if (options.getTimeoutIntervalInMs() != null && options.getTimeoutIntervalInMs() != 0) {
             builder.add(TIMEOUT, String.valueOf(options.getTimeoutIntervalInMs() / 1000));
